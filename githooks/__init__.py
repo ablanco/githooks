@@ -19,6 +19,7 @@ import os.path
 import re
 import shutil
 import tempfile
+import subprocess
 
 version = "0.1.1dev"
 
@@ -43,17 +44,23 @@ class MercurialUI(object):
 
 class GitCommands(object):
 
+    def _exec(self, proc):
+        p = subprocess.Popen(proc, stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        return out.splitlines()
+
     def getDescription(self, revision):
         # TODO
         return ""
 
-    def getFileNames(self, revision):
-        # TODO
-        return []
+    def getFileNames(self, old_revision, revision):
+        # TODO old_revision might be None, then what?
+        return self.exec(['git', 'log', '--name-only', "--pretty=format:''", old_revision, revision])
 
     def getFileData(self, revision, filename):
-        # TODO
-        return ""
+        tree = self.exec('git', 'cat-file', '-p', revision, '|', 'head', '-n', '1', '|', 'sed', "'s/tree //g'")[0]
+        # TODO this join needs to intert a \n while joining
+        return "".join(self.exec('git', 'show', tree + ':' + filename))
 
 
 class CheckerManager(object):
@@ -76,6 +83,7 @@ class CheckerManager(object):
 
     def check(self, checker):
         warnings = 0
+        old_rev = None
         for current_rev in self.revisions:
             rev_warnings = 0
             directory = tempfile.mkdtemp(suffix='-r%d' % current_rev,
@@ -88,8 +96,11 @@ class CheckerManager(object):
                 continue
 
             files_to_check = {}
-            revision_files = self.gitcmd.getFileNames(current_rev)
+            revision_files = self.gitcmd.getFileNames(old_revision, current_rev)
+
             for filename in revision_files:
+                if not(filename and filename != ""):
+                    continue
 
                 # TODO check if the file was removed in this changeset
 
@@ -112,6 +123,7 @@ class CheckerManager(object):
                               (current_rev - 1))
             warnings += rev_warnings
             shutil.rmtree(directory)
+            old_rev = current_rev
 
         if warnings:
             return True   # failure
