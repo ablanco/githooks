@@ -9,12 +9,12 @@ It uses the hghooks module as backend. It implements part of the Mercurial API
 for hooks, and calls hghooks for the heavy lifting. It supports what hghooks
 module supports, currently:
 
- * pep8 checking of python files
- * pyflakes checking of python files
- * checking for forgotten pdb statements in python files
- * Trac integration. This includes:
-   - Making sure at least a ticket is mentioned in the changeset message
-   - Updating the Trac ticket with the changeset
+    * pep8 checking of python files
+    * pyflakes checking of python files
+    * Checking for forgotten pdb statements in python files
+    * Trac integration. This includes:
+        - Making sure at least a ticket is mentioned in the changeset message
+        - Updating the Trac ticket with the changeset
 
 hghooks
 =======
