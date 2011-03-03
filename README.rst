@@ -19,7 +19,7 @@ module supports, currently:
 hghooks
 =======
 
-hghooks is being developed by Lorenzo Gil Sanchez. It's released under a GPLv3,
+hghooks is being developed by Lorenzo Gil Sanchez. It's released under a LGPLv3,
 and it's hosted on::
 
     https://bitbucket.org/lgs/hghooks
