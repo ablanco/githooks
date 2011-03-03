@@ -24,18 +24,24 @@ from hghooks import pyflakes_checker
 from githooks import CheckerManager
 from githooks import MercurialUI
 
-ui = MercurialUI()
-pep8CM = CheckerManager(ui, sys.argv[1:], 'no-pep8')
-pdbCM = CheckerManager(ui, sys.argv[1:], 'no-pdb')
-pyflakesCM = CheckerManager(ui, sys.argv[1:], 'no-pyflakes')
 
-result = False
+def main():
 
-result = result or pep8CM.check(pep8_checker)
-result = result or pdbCM.check(pdb_checker)
-result = result or pyflakesCM.check(pyflakes_checker)
+    ui = MercurialUI()
+    pep8CM = CheckerManager(ui, sys.argv[1:], 'no-pep8')
+    pdbCM = CheckerManager(ui, sys.argv[1:], 'no-pdb')
+    pyflakesCM = CheckerManager(ui, sys.argv[1:], 'no-pyflakes')
 
-if result:
-    sys.exit(1)  # failure
-else:
-    sys.exit(0)  # success
+    result = False
+
+    result = result or pep8CM.check(pep8_checker)
+    result = result or pdbCM.check(pdb_checker)
+    result = result or pyflakesCM.check(pyflakes_checker)
+
+    if result:
+        sys.exit(1)  # failure
+    else:
+        sys.exit(0)  # success
+
+if __name__ == '__main__':
+    main()

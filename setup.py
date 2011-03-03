@@ -43,4 +43,8 @@ setup(
         'pyflakes',
         'hghooks',
         ],
+    entry_points={
+        'console_scripts': [
+            'githooks = githooks.githooks:main',
+            ]},
 )
