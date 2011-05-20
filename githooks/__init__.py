@@ -57,7 +57,7 @@ class GitCommands(object):
         files = set(self._exec(['git', 'log', '--name-only', "--pretty=format:''", old_revision + '..' + revision]))
         result = []
         for f in files:
-	    if f != '' and f != "''":
+            if f != '' and f != "''":
                 result.append(f)
         return result
 

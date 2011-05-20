@@ -18,7 +18,6 @@
 import sys
 
 from hghooks.code import pep8_checker, pdb_checker, pyflakes_checker
-import pdb; pdb.set_trace()
 from githooks import CheckerManager, MercurialUI
 
 
