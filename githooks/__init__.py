@@ -54,20 +54,24 @@ class GitCommands(object):
         return ""
 
     def getFileNames(self, old_revision, revision):
-        # TODO old_revision might be None, then what?
-        return self.exec(['git', 'log', '--name-only', "--pretty=format:''", old_revision, revision])
+        files = set(self._exec(['git', 'log', '--name-only', "--pretty=format:''", old_revision + '..' + revision]))
+        result = []
+        for f in files:
+	    if f != '' and f != "''":
+                result.append(f)
+        return result
 
     def getFileData(self, revision, filename):
-        tree = self.exec('git', 'cat-file', '-p', revision, '|', 'head', '-n', '1', '|', 'sed', "'s/tree //g'")[0]
-        # TODO this join needs to intert a \n while joining
-        return "".join(self.exec('git', 'show', tree + ':' + filename))
+        tree = self._exec(['git', 'cat-file', '-p', revision])[0].split(" ")[1]
+        return "\n".join(self._exec(['git', 'show', tree + ':' + filename]))
 
 
 class CheckerManager(object):
 
-    def __init__(self, ui, revisions, skip_text=None):
+    def __init__(self, ui, revisions, initial_revision, skip_text=None):
         self.ui = ui
         self.revisions = revisions
+        self.initial_revision = initial_revision
         self.skip_text = skip_text
         self.gitcmd = GitCommands()
 
@@ -83,20 +87,20 @@ class CheckerManager(object):
 
     def check(self, checker):
         warnings = 0
-        old_rev = None
+        old_rev = self.initial_revision
         for current_rev in self.revisions:
             rev_warnings = 0
-            directory = tempfile.mkdtemp(suffix='-r%d' % current_rev,
+            directory = tempfile.mkdtemp(suffix='-r' + current_rev,
                                          prefix='githooks')
 
-            self.ui.debug("Checking revision %d\n" % current_rev)
+            self.ui.debug("Checking revision " + current_rev + "\n")
 
             description = self.gitcmd.getDescription(current_rev)
             if self.skip_text and self.skip_text in description:
                 continue
 
             files_to_check = {}
-            revision_files = self.gitcmd.getFileNames(old_revision, current_rev)
+            revision_files = self.gitcmd.getFileNames(old_rev, current_rev)
 
             for filename in revision_files:
                 if not(filename and filename != ""):
@@ -116,11 +120,10 @@ class CheckerManager(object):
                 rev_warnings += checker(files_to_check, description)
 
             if rev_warnings:
-                self.ui.warn('%d warnings found in revision %d\n' %
-                             (rev_warnings, current_rev - 1))
+                self.ui.warn(('%d warnings found in revision ' + current_rev + '\n') %
+                             rev_warnings)
             else:
-                self.ui.debug('No warnings in revision %d. Good job!\n' %
-                              (current_rev - 1))
+                self.ui.debug('No warnings in revision ' + current_rev + ' - Good job!\n')
             warnings += rev_warnings
             shutil.rmtree(directory)
             old_rev = current_rev

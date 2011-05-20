@@ -17,20 +17,23 @@
 
 import sys
 
-from hghooks import pep8_checker
-from hghooks import pdb_checker
-from hghooks import pyflakes_checker
-
-from githooks import CheckerManager
-from githooks import MercurialUI
+from hghooks.code import pep8_checker, pdb_checker, pyflakes_checker
+import pdb; pdb.set_trace()
+from githooks import CheckerManager, MercurialUI
 
 
 def main():
 
     ui = MercurialUI()
-    pep8CM = CheckerManager(ui, sys.argv[1:], 'no-pep8')
-    pdbCM = CheckerManager(ui, sys.argv[1:], 'no-pdb')
-    pyflakesCM = CheckerManager(ui, sys.argv[1:], 'no-pyflakes')
+
+    revs = sys.argv[1:-1]
+    ini_rev = sys.argv[-1:]
+    ini_rev = ini_rev[0]
+    revs.reverse()
+
+    pep8CM = CheckerManager(ui, revs, ini_rev, 'no-pep8')
+    pdbCM = CheckerManager(ui, revs, ini_rev, 'no-pdb')
+    pyflakesCM = CheckerManager(ui, revs, ini_rev, 'no-pyflakes')
 
     result = False
 
