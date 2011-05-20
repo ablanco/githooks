@@ -18,6 +18,7 @@
 import sys
 
 from hghooks.code import pep8_checker, pdb_checker, pyflakes_checker
+
 from githooks import CheckerManager, MercurialUI
 
 
@@ -34,11 +35,11 @@ def main():
     pdbCM = CheckerManager(ui, revs, ini_rev, 'no-pdb')
     pyflakesCM = CheckerManager(ui, revs, ini_rev, 'no-pyflakes')
 
-    result = False
+    pep8_ignores = ui.config('pep8', 'ignore', '')
 
-    result = result or pep8CM.check(pep8_checker)
-    result = result or pdbCM.check(pdb_checker)
-    result = result or pyflakesCM.check(pyflakes_checker)
+    result = pep8CM.check(pep8_checker(pep8_ignores))
+    result = pdbCM.check(pdb_checker) or result
+    result = pyflakesCM.check(pyflakes_checker) or result
 
     if result:
         sys.exit(1)  # failure

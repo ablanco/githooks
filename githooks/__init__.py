@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import os.path
 import re
 import shutil
@@ -47,14 +48,17 @@ class GitCommands(object):
     def _exec(self, proc):
         p = subprocess.Popen(proc, stdout=subprocess.PIPE)
         out, err = p.communicate()
-        return out.splitlines()
+        return out
 
     def getDescription(self, revision):
-        # TODO
-        return ""
+        desc = self._exec(['git', 'cat-file', '-p', revision]).splitlines()
+        desc = desc[5:]
+        return "\n".join(desc)
 
     def getFileNames(self, old_revision, revision):
-        files = set(self._exec(['git', 'log', '--name-only', "--pretty=format:''", old_revision + '..' + revision]))
+        files = self._exec(['git', 'log', '--name-only', "--pretty=format:''",
+                            old_revision + '..' + revision])
+        files = set(files.splitlines())
         result = []
         for f in files:
             if f != '' and f != "''":
@@ -62,8 +66,9 @@ class GitCommands(object):
         return result
 
     def getFileData(self, revision, filename):
-        tree = self._exec(['git', 'cat-file', '-p', revision])[0].split(" ")[1]
-        return "\n".join(self._exec(['git', 'show', tree + ':' + filename]))
+        tree = self._exec(['git', 'cat-file', '-p', revision])
+        tree = tree.splitlines()[0].split(" ")[1]
+        return self._exec(['git', 'show', tree + ':' + filename])
 
 
 class CheckerManager(object):
@@ -93,7 +98,8 @@ class CheckerManager(object):
             directory = tempfile.mkdtemp(suffix='-r' + current_rev,
                                          prefix='githooks')
 
-            self.ui.debug("Checking revision " + current_rev + "\n")
+            self.ui.debug(checker.__name__ + " -> Checking revision "
+                          + current_rev)
 
             description = self.gitcmd.getDescription(current_rev)
             if self.skip_text and self.skip_text in description:
@@ -114,16 +120,22 @@ class CheckerManager(object):
                     continue
 
                 full_path = os.path.join(directory, filename)
+                os.makedirs(os.path.split(full_path)[0])
+                f = open(full_path, 'w')
+                f.write(filedata)
+                f.close()
                 files_to_check[full_path] = filedata
 
             if files_to_check:
                 rev_warnings += checker(files_to_check, description)
 
             if rev_warnings:
-                self.ui.warn(('%d warnings found in revision ' + current_rev + '\n') %
-                             rev_warnings)
+                self.ui.warn((checker.__name__
+                              + ' -> %d warnings found in revision ' +
+                              current_rev + '\n') % rev_warnings)
             else:
-                self.ui.debug('No warnings in revision ' + current_rev + ' - Good job!\n')
+                self.ui.debug(checker.__name__ + ' -> No warnings in revision '
+                              + current_rev + ' - Good job!\n')
             warnings += rev_warnings
             shutil.rmtree(directory)
             old_rev = current_rev
