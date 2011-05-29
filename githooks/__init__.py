@@ -17,6 +17,7 @@
 
 import os
 import os.path
+import sys
 import re
 import shutil
 import tempfile
@@ -35,12 +36,37 @@ class MercurialUI(object):
         print text
 
     def warn(self, text):
-        # TODO print in the error output
-        print text
+        sys.stderr.write(text + "\n")
 
     def config(self, arg1, arg2, arg3=None):
         # TODO access config
         return ''
+
+
+class MercurialChange(object):
+
+    def __init__(self, revision):
+        self.revision = revision
+        self.gitcmd = GitCommands()
+
+    def rev(self):
+        # Return revision number (none in git)
+        return ''
+
+    def hex(self):
+        # Return the hexadecimal code of the change
+        return self.revision
+
+    def description(self):
+        return self.gitcmd.getDescription(self.rev)
+
+    def user(self):
+        return self.gitcmd.getAuthor(self.rev)
+
+    def date(self):
+        date = self.gitcmd.getDate(self.rev)
+        # TODO convert date into hg format
+        return date
 
 
 class GitCommands(object):
@@ -54,6 +80,14 @@ class GitCommands(object):
         desc = self._exec(['git', 'cat-file', '-p', revision]).splitlines()
         desc = desc[5:]
         return "\n".join(desc)
+
+    def getAuthor(self, revision):
+        # TODO
+        return ""
+
+    def getDate(self, revision):
+        # TODO
+        return ""
 
     def getFileNames(self, old_revision, revision):
         files = self._exec(['git', 'log', '--name-only', "--pretty=format:''",
