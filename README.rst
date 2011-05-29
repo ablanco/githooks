@@ -2,8 +2,8 @@
 githooks
 ========
 
-githooks is a simple module that adds several useful hooks for use in Git hooks
-system.
+githooks is a simple module that adds several python related useful hooks to use
+with Git hooks system.
 
 It uses the hghooks module as backend. It implements part of the Mercurial API
 for hooks, and calls hghooks for the heavy lifting. It supports what hghooks
