@@ -21,7 +21,8 @@ from hghooks.code import pep8_checker, pdb_checker, pyflakes_checker
 from hghooks.trachooks import TicketChecker, TicketUpdater
 from hghooks.trachooks import load_ticket_commands
 
-from githooks import CheckerManager, MercurialUI, MercurialChange
+from githooks import CheckerManager
+from githooks.hg import MercurialUI, MercurialChange
 
 
 def main():

@@ -17,92 +17,16 @@
 
 import os
 import os.path
-import sys
 import re
 import shutil
 import tempfile
-import subprocess
+
+from githooks.git import git_description, git_file_data, git_file_names
 
 version = "0.1.1dev"
 
 re_options = re.IGNORECASE | re.MULTILINE | re.DOTALL
 skip_pattern = re.compile('# githooks: (.*)', re_options)
-
-
-class MercurialUI(object):
-
-    def debug(self, text):
-        # TODO print only in debug mode
-        print text
-
-    def warn(self, text):
-        sys.stderr.write(text + "\n")
-
-    def config(self, arg1, arg2, arg3=None):
-        # TODO access config
-        return ''
-
-
-class MercurialChange(object):
-
-    def __init__(self, revision):
-        self.revision = revision
-        self.gitcmd = GitCommands()
-
-    def rev(self):
-        # Return revision number (none in git)
-        return ''
-
-    def hex(self):
-        # Return the hexadecimal code of the change
-        return self.revision
-
-    def description(self):
-        return self.gitcmd.getDescription(self.rev)
-
-    def user(self):
-        return self.gitcmd.getAuthor(self.rev)
-
-    def date(self):
-        date = self.gitcmd.getDate(self.rev)
-        # TODO convert date into hg format
-        return date
-
-
-class GitCommands(object):
-
-    def _exec(self, proc):
-        p = subprocess.Popen(proc, stdout=subprocess.PIPE)
-        out, err = p.communicate()
-        return out
-
-    def getDescription(self, revision):
-        desc = self._exec(['git', 'cat-file', '-p', revision]).splitlines()
-        desc = desc[5:]
-        return "\n".join(desc)
-
-    def getAuthor(self, revision):
-        # TODO
-        return ""
-
-    def getDate(self, revision):
-        # TODO
-        return ""
-
-    def getFileNames(self, old_revision, revision):
-        files = self._exec(['git', 'log', '--name-only', "--pretty=format:''",
-                            old_revision + '..' + revision])
-        files = set(files.splitlines())
-        result = []
-        for f in files:
-            if f != '' and f != "''":
-                result.append(f)
-        return result
-
-    def getFileData(self, revision, filename):
-        tree = self._exec(['git', 'cat-file', '-p', revision])
-        tree = tree.splitlines()[0].split(" ")[1]
-        return self._exec(['git', 'show', tree + ':' + filename])
 
 
 class CheckerManager(object):
@@ -112,7 +36,6 @@ class CheckerManager(object):
         self.revisions = revisions
         self.initial_revision = initial_revision
         self.skip_text = skip_text
-        self.gitcmd = GitCommands()
 
     def skip_file(self, filename, filedata):
         if not filename.endswith('.py'):
@@ -135,12 +58,12 @@ class CheckerManager(object):
             self.ui.debug(checker.__name__ + " -> Checking revision "
                           + current_rev)
 
-            description = self.gitcmd.getDescription(current_rev)
+            description = git_description(current_rev)
             if self.skip_text and self.skip_text in description:
                 continue
 
             files_to_check = {}
-            revision_files = self.gitcmd.getFileNames(old_rev, current_rev)
+            revision_files = git_file_names(old_rev, current_rev)
 
             for filename in revision_files:
                 if not(filename and filename != ""):
@@ -148,7 +71,7 @@ class CheckerManager(object):
 
                 # TODO check if the file was removed in this changeset
 
-                filedata = self.gitcmd.getFileData(current_rev, filename)
+                filedata = git_file_data(current_rev, filename)
 
                 if self.skip_text and self.skip_file(filename, filedata):
                     continue
