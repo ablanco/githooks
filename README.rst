@@ -16,13 +16,17 @@ module supports, currently:
         - Making sure at least a ticket is mentioned in the changeset message
         - Updating the Trac ticket with the changeset
 
+PyPi package:
+
+http://pypi.python.org/pypi/githooks
+
 hghooks
 =======
 
 hghooks is being developed by Lorenzo Gil Sanchez. It's released under a LGPLv3,
-and it's hosted on::
+and it's hosted on:
 
-    https://bitbucket.org/lgs/hghooks
+https://bitbucket.org/lgs/hghooks
 
 Documentation
 =============

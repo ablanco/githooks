@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+# Called by "git receive-pack" with arguments: refname sha1-old sha1-new
+
+# --- Command line
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+# --- Safety check
+if [ -z "$GIT_DIR" ]; then
+    echo "Don't run this script from the command line." >&2
+    echo " (if you want, you could supply GIT_DIR then run" >&2
+    echo "  $0 <ref> <oldrev> <newrev>)" >&2
+    exit 1
+fi
+
+if [ -z "$refname" -o -z "$oldrev" -o -z "$newrev" ]; then
+    echo "Usage: $0 <ref> <oldrev> <newrev>" >&2
+    exit 1
+fi
+
+# --- Check types
+# if $newrev is 0000...0000, it's a commit to delete a ref.
+zero="0000000000000000000000000000000000000000"
+if [ "$newrev" != "$zero" ]; then
+    new_commits=$(git rev-list $oldrev..$newrev)
+    # TODO
+    env python $GL_REPO_BASE_ABS/$GL_REPO.git/hooks/githooks/githooks/launcher.py $new_commits $oldrev
+fi
+
+exit 0

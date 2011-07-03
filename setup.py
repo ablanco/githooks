@@ -45,6 +45,6 @@ setup(
         ],
     entry_points={
         'console_scripts': [
-            'githooks = githooks.githooks:main',
+            'githooks = githooks.launcher:main',
             ]},
 )

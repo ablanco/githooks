@@ -1,0 +1,5 @@
+recursive-include githooks *.py
+include *.rst
+include *.sample
+include COPYING
+include AUTHORS
