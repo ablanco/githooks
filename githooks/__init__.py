@@ -23,7 +23,7 @@ import tempfile
 
 from githooks.git import git_description, git_file_data, git_file_names
 
-version = "0.3dev"
+version = "0.4dev"
 
 re_options = re.IGNORECASE | re.MULTILINE | re.DOTALL
 skip_pattern = re.compile('# githooks: (.*)', re_options)

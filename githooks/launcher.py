@@ -18,8 +18,6 @@
 import sys
 
 from hghooks.code import pep8_checker, pdb_checker, pyflakes_checker
-from hghooks.trachooks import TicketChecker, TicketUpdater
-from hghooks.trachooks import load_ticket_commands
 
 from githooks import CheckerManager
 from githooks.hg import MercurialUI, MercurialChange
@@ -27,73 +25,87 @@ from githooks.hg import MercurialUI, MercurialChange
 
 def main():
 
-    ui = MercurialUI()
+    result = False
 
-    # Git revisions to check
+    try:
+        ui = MercurialUI()
 
-    revs = sys.argv[1:-1]
-    ini_rev = sys.argv[-1:]
-    ini_rev = ini_rev[0]
-    revs.reverse()
+        # Parameters
+        # 0 to next to last: git revisions to check
+        # last: initial revision
 
-    # PEP8, PDB and PYFLAKES
+        revs = sys.argv[1:-1]
+        ini_rev = sys.argv[-1:]
+        ini_rev = ini_rev[0]
+        revs.reverse()
 
-    # Pep8, pdb and pyflakes checkers
+        # PEP8, PDB and PYFLAKES
 
-    pep8CM = CheckerManager(ui, revs, ini_rev, 'no-pep8')
-    pdbCM = CheckerManager(ui, revs, ini_rev, 'no-pdb')
-    pyflakesCM = CheckerManager(ui, revs, ini_rev, 'no-pyflakes')
+        # Pep8, pdb and pyflakes checkers
 
-    pep8_ignores = ui.config('pep8', 'ignore', '')
+        pep8CM = CheckerManager(ui, revs, ini_rev, 'no-pep8')
+        pdbCM = CheckerManager(ui, revs, ini_rev, 'no-pdb')
+        pyflakesCM = CheckerManager(ui, revs, ini_rev, 'no-pyflakes')
 
-    # Check pep8, pdb and pyflakes
+        pep8_ignores = ui.config('pep8', 'ignore', '')
 
-    result = pep8CM.check(pep8_checker(pep8_ignores))
-    result = pdbCM.check(pdb_checker) or result
-    result = pyflakesCM.check(pyflakes_checker) or result
+        # Check pep8, pdb and pyflakes
 
-    # TRAC
+        result = pep8CM.check(pep8_checker(pep8_ignores))
+        result = pdbCM.check(pdb_checker) or result
+        result = pyflakesCM.check(pyflakes_checker) or result
 
-    trac_env = ui.config('trac', 'environment')
+        # TRAC
 
-    #if trac_env is None:
-    #ui.warn('You must set the environment option in the [trac] section'
-            #' of the repo configuration to use this hook')
-    #return True  # failure
+        track_hook_active = ui.config('trac', 'hook_active', False)
 
-    # Trac ticket mention checker
+        if track_hook_active:
+            from hghooks.trachooks import TicketChecker, TicketUpdater
+            from hghooks.trachooks import load_ticket_commands
 
-    tracCM = CheckerManager(ui, revs, ini_rev, 'no-pyflakes')
+            trac_env = ui.config('trac', 'environment')
 
-    ticket_commands = load_ticket_commands()
-    ticket_words = ticket_commands.keys()
+            #if trac_env is None:
+            #ui.warn('You must set the environment option in the [trac] section'
+                    #' of the repo configuration to use this hook')
+            #return True  # failure
 
-    # Check trac ticket mention
+            # Trac ticket mention checker
 
-    result = tracCM.check(TicketChecker(trac_env, ticket_words, ui)) or result
+            tracCM = CheckerManager(ui, revs, ini_rev, 'no-pyflakes')
 
-    # Trac ticket comments updater
+            ticket_commands = load_ticket_commands()
+            ticket_words = ticket_commands.keys()
 
-    repo_name = ui.config('trac', 'repo_name', None)
-    changeset_style = ui.config('trac', 'changeset_style', 'short-hex')
-    msg_template = ui.config('trac', 'msg_template',
-                             '(At [%(changeset)s]) %(msg)s')
-    msg_template = unicode(msg_template, 'utf-8')
+            # Check trac ticket mention
 
-    ticket_updater = TicketUpdater(trac_env, repo_name, changeset_style,
-                                   msg_template, ui)
+            result = tracCM.check(TicketChecker(trac_env, ticket_words, ui)) or result
 
-    # Update trac ticket comments
+            # Trac ticket comments updater
 
-    for rev in revs:
-        ticket_updater(MercurialChange(rev))
+            repo_name = ui.config('trac', 'repo_name', None)
+            changeset_style = ui.config('trac', 'changeset_style', 'short-hex')
+            msg_template = ui.config('trac', 'msg_template',
+                                    '(At [%(changeset)s]) %(msg)s')
+            msg_template = unicode(msg_template, 'utf-8')
 
-    # Return result value
+            ticket_updater = TicketUpdater(trac_env, repo_name, changeset_style,
+                                        msg_template, ui)
 
-    if result:
-        sys.exit(1)  # failure
-    else:
-        sys.exit(0)  # success
+            # Update trac ticket comments
+
+            for rev in revs:
+                ticket_updater(MercurialChange(rev))
+
+        # Return result value
+
+        if result:
+            sys.exit(1)  # failure
+        else:
+            sys.exit(0)  # success
+
+    except:
+        sys.exit(1)  # when error always default to failure
 
 if __name__ == '__main__':
     main()

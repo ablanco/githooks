@@ -29,9 +29,12 @@ class MercurialUI(object):
     def warn(self, text):
         sys.stderr.write(text + "\n")
 
-    def config(self, arg1, arg2, arg3=None):
+    def config(self, family, variable, default=None):
         # TODO access config
-        return ''
+        if default is not None:
+            return default
+        else:
+            return ''
 
 
 class MercurialChange(object):
