@@ -6,6 +6,7 @@
 refname="$1"
 oldrev="$2"
 newrev="$3"
+result=0
 
 # --- Safety check
 if [ -z "$GIT_DIR" ]; then
@@ -27,6 +28,8 @@ if [ "$newrev" != "$zero" ]; then
     new_commits=$(git rev-list $oldrev..$newrev)
     echo "githooks $new_commits $oldrev"
     githooks $new_commits $oldrev
+    # read githooks exit code
+    result=$?
 fi
 
-exit 0
+exit $result

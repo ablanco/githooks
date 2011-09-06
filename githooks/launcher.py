@@ -86,7 +86,7 @@ def main():
             repo_name = ui.config('trac', 'repo_name', None)
             changeset_style = ui.config('trac', 'changeset_style', 'short-hex')
             msg_template = ui.config('trac', 'msg_template',
-                                    '(At [%(changeset)s]) %(msg)s')
+                                     '(At [%(changeset)s]) %(msg)s')
             msg_template = unicode(msg_template, 'utf-8')
 
             ticket_updater = TicketUpdater(trac_env, repo_name, changeset_style,
