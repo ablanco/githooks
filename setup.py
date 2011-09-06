@@ -33,7 +33,7 @@ setup(
     description="Set of Git hooks for pep8, pyflakes and trac integration",
     long_description=read('README.rst'),
     license="GPL 3",
-    keywords="git pep8 pyflakes trac",
+    keywords="git hook pep8 pyflakes trac",
     packages=['githooks'],
     url='https://github.com/ablanco/githooks/',
     zip_safe=False,
