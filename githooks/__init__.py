@@ -77,7 +77,8 @@ class CheckerManager(object):
                     continue
 
                 full_path = os.path.join(directory, filename)
-                os.makedirs(os.path.split(full_path)[0])
+                if not os.path.exists(os.path.dirname(full_path)):
+                    os.makedirs(os.path.dirname(full_path))
                 f = open(full_path, 'w')
                 f.write(filedata)
                 f.close()
