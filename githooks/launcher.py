@@ -21,6 +21,7 @@ from hghooks.code import pep8_checker, pdb_checker, pyflakes_checker
 
 from githooks import CheckerManager
 from githooks.hg import MercurialUI, MercurialChange
+from githooks.git import REPOSITORY_CONTEXT
 
 
 def main():
@@ -57,13 +58,13 @@ def main():
 
         # TRAC
 
-        track_hook_active = ui.config('trac', 'hook_active', False)
+        track_hook_active = ui.config('trac', 'hook_active', False, REPOSITORY_CONTEXT)
 
         if track_hook_active:
             from hghooks.trachooks import TicketChecker, TicketUpdater
             from hghooks.trachooks import load_ticket_commands
 
-            trac_env = ui.config('trac', 'environment')
+            trac_env = ui.config('trac', 'environment', context=REPOSITORY_CONTEXT)
 
             #if trac_env is None:
             #ui.warn('You must set the environment option in the [trac] section'
@@ -83,10 +84,12 @@ def main():
 
             # Trac ticket comments updater
 
-            repo_name = ui.config('trac', 'repo_name', None)
-            changeset_style = ui.config('trac', 'changeset_style', 'short-hex')
+            repo_name = ui.config('trac', 'repo_name', context=REPOSITORY_CONTEXT)
+            changeset_style = ui.config('trac', 'changeset_style', 'short-hex',
+                                        REPOSITORY_CONTEXT)
             msg_template = ui.config('trac', 'msg_template',
-                                     '(At [%(changeset)s]) %(msg)s')
+                                     '(At [%(changeset)s]) %(msg)s',
+                                     REPOSITORY_CONTEXT)
             msg_template = unicode(msg_template, 'utf-8')
 
             ticket_updater = TicketUpdater(trac_env, repo_name, changeset_style,

@@ -18,10 +18,21 @@
 import subprocess
 
 
+GLOBAL_CONTEXT = 'global'
+REPOSITORY_CONTEXT = 'local'
+SYSTEM_CONTEXT = 'system'
+
+
 def execute_command(proc):
     p = subprocess.Popen(proc, stdout=subprocess.PIPE)
     out, err = p.communicate()
     return out
+
+
+def git_config(family, variable, context):
+    value = execute_command(['git', 'config', '--%s' % context,
+                            '%s.%s' % (family, variable)])
+    return value[:-1]
 
 
 def git_description(revision):

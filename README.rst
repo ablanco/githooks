@@ -34,4 +34,77 @@ https://bitbucket.org/lgs/hghooks
 Documentation
 =============
 
+How to use
+----------
+
 Soon :P
+
+Configuration
+-------------
+
+Githooks has serveral options. It uses **git config** as configuration
+backend.
+
+All githooks options has "githooks" as family, so a git configuration file looks
+like similar to this:
+
+::
+
+ [user]
+         name = John Doe
+         email = johndoe@example.com
+ [githooks]
+         pep8.ignore = E501
+         trac.hook_active = False
+
+How to read:
+
+::
+
+ $ git config --global githook.pep8.ignore
+ E501
+ $
+
+How to set:
+
+::
+
+ $ git config --global githook.pep8.ignore E501
+
+You can find more details about git configuration on the git help:
+
+::
+
+ $ git config --help
+
+In git configuration there are several contexts. Githooks uses two of them.
+
+Global
+~~~~~~
+
+Global context is user level. This configuration is common for all the
+repositories of the user.
+
+* **pep8.ignore**
+
+  - pep8 error list to ignore
+  - defaults to None
+
+Local
+~~~~~
+
+Local context is repository level. This configuration only affects one
+repository.
+
+* **trac.hook_active**
+
+  - activate trac integration hook
+  - defaults to False
+
+* **trac.repo_name**
+* **trac.changeset_style**
+* **trac.msg_template**
+
+.. note::
+
+ More and better documentation soon :P

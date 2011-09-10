@@ -17,7 +17,8 @@
 
 import sys
 
-from githooks.git import git_author, git_date, git_description
+from githooks.git import git_author, git_date, git_description, git_config
+from githooks.git import GLOBAL_CONTEXT
 
 
 class MercurialUI(object):
@@ -29,12 +30,12 @@ class MercurialUI(object):
     def warn(self, text):
         sys.stderr.write(text + "\n")
 
-    def config(self, family, variable, default=None):
-        # TODO access config
-        if default is not None:
+    def config(self, family, variable, default=None, context=GLOBAL_CONTEXT):
+        value = git_config('githooks', '%s.%s' % (family, variable), context)
+        if value == '' and default is not None:
             return default
         else:
-            return ''
+            return value
 
 
 class MercurialChange(object):
