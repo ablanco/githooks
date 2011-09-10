@@ -21,7 +21,7 @@ from hghooks.code import pep8_checker, pdb_checker, pyflakes_checker
 
 from githooks import CheckerManager
 from githooks.hg import MercurialUI, MercurialChange
-from githooks.git import REPOSITORY_CONTEXT
+import githooks.git as git
 
 
 def main():
@@ -58,17 +58,19 @@ def main():
 
         # TRAC
 
-        track_hook_active = ui.config('trac', 'hook_active', False, REPOSITORY_CONTEXT)
+        track_hook_active = ui.config('trac', 'hook_active', False,
+                                      git.REPOSITORY_CONTEXT)
 
         if track_hook_active:
             from hghooks.trachooks import TicketChecker, TicketUpdater
             from hghooks.trachooks import load_ticket_commands
 
-            trac_env = ui.config('trac', 'environment', context=REPOSITORY_CONTEXT)
+            trac_env = ui.config('trac', 'environment',
+                                 context=git.REPOSITORY_CONTEXT)
 
             #if trac_env is None:
-            #ui.warn('You must set the environment option in the [trac] section'
-                    #' of the repo configuration to use this hook')
+            #ui.warn('You must set the environment option in the [trac]'
+                    #' section of the repo configuration to use this hook')
             #return True  # failure
 
             # Trac ticket mention checker
@@ -80,20 +82,22 @@ def main():
 
             # Check trac ticket mention
 
-            result = tracCM.check(TicketChecker(trac_env, ticket_words, ui)) or result
+            result = (tracCM.check(TicketChecker(trac_env, ticket_words, ui))
+                      or result)
 
             # Trac ticket comments updater
 
-            repo_name = ui.config('trac', 'repo_name', context=REPOSITORY_CONTEXT)
+            repo_name = ui.config('trac', 'repo_name',
+                                  context=git.REPOSITORY_CONTEXT)
             changeset_style = ui.config('trac', 'changeset_style', 'short-hex',
-                                        REPOSITORY_CONTEXT)
+                                        git.REPOSITORY_CONTEXT)
             msg_template = ui.config('trac', 'msg_template',
                                      '(At [%(changeset)s]) %(msg)s',
-                                     REPOSITORY_CONTEXT)
+                                     git.REPOSITORY_CONTEXT)
             msg_template = unicode(msg_template, 'utf-8')
 
-            ticket_updater = TicketUpdater(trac_env, repo_name, changeset_style,
-                                        msg_template, ui)
+            ticket_updater = TicketUpdater(trac_env, repo_name,
+                                           changeset_style, msg_template, ui)
 
             # Update trac ticket comments
 

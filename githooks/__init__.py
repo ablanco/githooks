@@ -21,7 +21,7 @@ import re
 import shutil
 import tempfile
 
-from githooks.git import git_description, git_file_data, git_file_names
+import githooks.git as git
 
 version = "0.4dev"
 
@@ -58,12 +58,12 @@ class CheckerManager(object):
             self.ui.debug(checker.__name__ + " -> Checking revision "
                           + current_rev)
 
-            description = git_description(current_rev)
+            description = git.description(current_rev)
             if self.skip_text and self.skip_text in description:
                 continue
 
             files_to_check = {}
-            revision_files = git_file_names(old_rev, current_rev)
+            revision_files = git.file_names(old_rev, current_rev)
 
             for filename in revision_files:
                 if not(filename and filename != ""):
@@ -71,7 +71,7 @@ class CheckerManager(object):
 
                 # TODO check if the file was removed in this changeset
 
-                filedata = git_file_data(current_rev, filename)
+                filedata = git.file_data(current_rev, filename)
 
                 if self.skip_text and self.skip_file(filename, filedata):
                     continue

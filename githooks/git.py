@@ -23,37 +23,38 @@ REPOSITORY_CONTEXT = 'local'
 SYSTEM_CONTEXT = 'system'
 
 
-def execute_command(proc):
+def __execute_command(proc):
     p = subprocess.Popen(proc, stdout=subprocess.PIPE)
     out, err = p.communicate()
     return out
 
 
-def git_config(family, variable, context):
-    value = execute_command(['git', 'config', '--%s' % context,
-                            '%s.%s' % (family, variable)])
+def config(family, variable, context):
+    value = __execute_command(['git', 'config', '--%s' % context,
+                              '%s.%s' % (family, variable)])
     return value[:-1]
 
 
-def git_description(revision):
-    desc = execute_command(['git', 'cat-file', '-p', revision]).splitlines()
+def description(revision):
+    desc = __execute_command(['git', 'cat-file', '-p', revision]).splitlines()
     desc = desc[5:]
     return "\n".join(desc)
 
 
-def git_author(revision):
+def author(revision):
     # TODO
     return ""
 
 
-def git_date(revision):
+def date(revision):
     # TODO
     return ""
 
 
-def git_file_names(old_revision, revision):
-    files = execute_command(['git', 'log', '--name-only', "--pretty=format:''",
-                            old_revision + '..' + revision])
+def file_names(old_revision, revision):
+    files = __execute_command(['git', 'log', '--name-only',
+                              "--pretty=format:''",
+                              old_revision + '..' + revision])
     files = set(files.splitlines())
     result = []
     for f in files:
@@ -62,7 +63,7 @@ def git_file_names(old_revision, revision):
     return result
 
 
-def git_file_data(revision, filename):
-    tree = execute_command(['git', 'cat-file', '-p', revision])
+def file_data(revision, filename):
+    tree = __execute_command(['git', 'cat-file', '-p', revision])
     tree = tree.splitlines()[0].split(" ")[1]
-    return execute_command(['git', 'show', tree + ':' + filename])
+    return __execute_command(['git', 'show', tree + ':' + filename])

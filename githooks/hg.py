@@ -17,8 +17,7 @@
 
 import sys
 
-from githooks.git import git_author, git_date, git_description, git_config
-from githooks.git import GLOBAL_CONTEXT
+import githooks.git as git
 
 
 class MercurialUI(object):
@@ -30,8 +29,9 @@ class MercurialUI(object):
     def warn(self, text):
         sys.stderr.write(text + "\n")
 
-    def config(self, family, variable, default=None, context=GLOBAL_CONTEXT):
-        value = git_config('githooks', '%s.%s' % (family, variable), context)
+    def config(self, family, variable, default=None,
+               context=git.GLOBAL_CONTEXT):
+        value = git.config('githooks', '%s.%s' % (family, variable), context)
         if value == '' and default is not None:
             return default
         else:
@@ -52,12 +52,12 @@ class MercurialChange(object):
         return self.revision
 
     def description(self):
-        return git_description(self.rev)
+        return git.description(self.rev)
 
     def user(self):
-        return git_author(self.rev)
+        return git.author(self.rev)
 
     def date(self):
-        date = git_date(self.rev)
+        date = git.date(self.rev)
         # TODO convert date into hg format
         return date
