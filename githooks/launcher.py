@@ -58,7 +58,7 @@ def main():
 
         # TRAC
 
-        track_hook_active = ui.config('trac', 'hook_active', False,
+        track_hook_active = ui.config('trac', 'hook-active', False,
                                       git.REPOSITORY_CONTEXT)
 
         if track_hook_active:
@@ -87,11 +87,11 @@ def main():
 
             # Trac ticket comments updater
 
-            repo_name = ui.config('trac', 'repo_name',
+            repo_name = ui.config('trac', 'repo-name',
                                   context=git.REPOSITORY_CONTEXT)
-            changeset_style = ui.config('trac', 'changeset_style', 'short-hex',
+            changeset_style = ui.config('trac', 'changeset-style', 'short-hex',
                                         git.REPOSITORY_CONTEXT)
-            msg_template = ui.config('trac', 'msg_template',
+            msg_template = ui.config('trac', 'msg-template',
                                      '(At [%(changeset)s]) %(msg)s',
                                      git.REPOSITORY_CONTEXT)
             msg_template = unicode(msg_template, 'utf-8')

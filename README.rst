@@ -53,9 +53,10 @@ like similar to this:
  [user]
          name = John Doe
          email = johndoe@example.com
- [githooks]
-         pep8.ignore = E501
-         trac.hook_active = False
+ [githooks "pep8"]
+         ignore = E501
+ [githooks "trac"]
+         hook-active = False
 
 How to read:
 
@@ -96,14 +97,14 @@ Local
 Local context is repository level. This configuration only affects one
 repository.
 
-* **trac.hook_active**
+* **trac.hook-active**
 
   - activate trac integration hook
   - defaults to False
 
-* **trac.repo_name**
-* **trac.changeset_style**
-* **trac.msg_template**
+* **trac.repo-name**
+* **trac.changeset-style**
+* **trac.msg-template**
 
 .. note::
 
