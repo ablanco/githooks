@@ -61,7 +61,7 @@ How to read:
 
 ::
 
- $ git config --global githook.pep8.ignore
+ $ git config --global githooks.pep8.ignore
  E501
  $
 
@@ -69,7 +69,7 @@ How to set:
 
 ::
 
- $ git config --global githook.pep8.ignore E501
+ $ git config --global githooks.pep8.ignore E501
 
 You can find more details about git configuration on the git help:
 
