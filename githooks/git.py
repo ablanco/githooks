@@ -42,13 +42,13 @@ def description(revision):
 
 
 def author(revision):
-    # TODO
-    return ""
+    log = __execute_command(['git', 'log', revision, '-n', '1']).splitlines()
+    return log[2][8:]
 
 
 def date(revision):
-    # TODO
-    return ""
+    log = __execute_command(['git', 'log', revision, '-n', '1']).splitlines()
+    return log[3][8:]
 
 
 def file_names(old_revision, revision):
