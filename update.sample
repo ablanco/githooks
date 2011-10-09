@@ -6,7 +6,6 @@
 refname="$1"
 oldrev="$2"
 newrev="$3"
-result=0
 
 # --- Safety check
 if [ -z "$GIT_DIR" ]; then
@@ -22,14 +21,19 @@ if [ -z "$refname" -o -z "$oldrev" -o -z "$newrev" ]; then
 fi
 
 # --- Check types
-# if $newrev is 0000...0000, it's a commit to delete a ref.
 zero="0000000000000000000000000000000000000000"
-if [ "$newrev" != "$zero" ]; then
+#if [ "$newrev" != "$zero" ]; then
+#    TODO
+#fi
+if [ "$oldrev" != "$zero" ]; then
     new_commits=$(git rev-list $oldrev..$newrev)
-    echo "githooks $new_commits $oldrev"
-    githooks $new_commits $oldrev
-    # read githooks exit code
-    result=$?
+else
+    new_commits=$(git rev-list $newrev)
+    oldrev=$newrev
 fi
 
-exit $result
+echo "githooks $new_commits $oldrev"
+githooks $new_commits $oldrev
+
+# read githooks exit code
+exit $?

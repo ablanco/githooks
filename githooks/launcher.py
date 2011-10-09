@@ -111,8 +111,11 @@ def main():
         else:
             sys.exit(0)  # success
 
+    except SystemExit:
+        ui.debug('Exiting githooks')
     except:
-        sys.exit(1)  # when error always default to failure
+        print "Unexpected error:", sys.exc_info()[0]
+        raise
 
 if __name__ == '__main__':
     main()
