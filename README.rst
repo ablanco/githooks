@@ -14,6 +14,7 @@ module supports, currently:
 * pep8 checking of python files
 * pyflakes checking of python files
 * Checking for forgotten pdb statements in python files
+* JSLint checking of JavaScript and HTML files
 * Trac integration. This includes:
 
   - Making sure at least a ticket is mentioned in the changeset message
@@ -30,6 +31,12 @@ hghooks is being developed by Lorenzo Gil Sanchez. It's released under a LGPLv3,
 and it's hosted on:
 
 https://bitbucket.org/lgs/hghooks
+
+Extra dependencies
+==================
+
+It uses pyjslint, who requires `nodejs <http://nodejs.org>`_. You can find
+more details on this in http://pypi.python.org/pypi/pyjslint/
 
 Documentation
 =============
