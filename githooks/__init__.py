@@ -31,14 +31,20 @@ skip_pattern = re.compile('# githooks: (.*)', re_options)
 
 class CheckerManager(object):
 
-    def __init__(self, ui, revisions, initial_revision, skip_text=None):
+    def __init__(self, ui, revisions, initial_revision, skip_text=None,
+                 extensions=['.py']):
         self.ui = ui
         self.revisions = revisions
         self.initial_revision = initial_revision
         self.skip_text = skip_text
+        self.extensions = extensions
 
     def skip_file(self, filename, filedata):
-        if not filename.endswith('.py'):
+        match = False
+        for ext in self.extensions:
+            if filename.endswith(ext):
+                match = True
+        if not match:
             return True
 
         for match in skip_pattern.findall(filedata):

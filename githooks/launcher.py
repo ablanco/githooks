@@ -17,7 +17,8 @@
 
 import sys
 
-from hghooks.code import pep8_checker, pdb_checker, pyflakes_checker
+from hghooks.code import (pep8_checker, pdb_checker, pyflakes_checker,
+                          jslint_checker)
 
 from githooks import CheckerManager
 from githooks.hg import MercurialUI, MercurialChange
@@ -47,6 +48,8 @@ def main():
         pep8CM = CheckerManager(ui, revs, ini_rev, 'no-pep8')
         pdbCM = CheckerManager(ui, revs, ini_rev, 'no-pdb')
         pyflakesCM = CheckerManager(ui, revs, ini_rev, 'no-pyflakes')
+        jslintCM = CheckerManager(ui, revs, ini_rev, 'no-jslint',
+                                  ['.js', '.html'])
 
         pep8_ignores = ui.config('pep8', 'ignore', '')
 
@@ -55,6 +58,7 @@ def main():
         result = pep8CM.check(pep8_checker(pep8_ignores))
         result = pdbCM.check(pdb_checker) or result
         result = pyflakesCM.check(pyflakes_checker) or result
+        result = jslintCM.check(jslint_checker) or result
 
         # TRAC
 
