@@ -115,8 +115,10 @@ def main():
         else:
             sys.exit(0)  # success
 
-    except SystemExit:
+    except SystemExit as exit:
         ui.debug('Exiting githooks')
+        # After debugging return the intended exit code
+        sys.exit(exit.code)
     except:
         print "Unexpected error:", sys.exc_info()[0]
         raise
