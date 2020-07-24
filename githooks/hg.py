@@ -24,7 +24,7 @@ class MercurialUI(object):
 
     def debug(self, text):
         # TODO print only in debug mode
-        print text
+        print(text)
 
     def warn(self, text):
         sys.stderr.write(text + "\n")
