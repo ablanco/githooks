@@ -120,7 +120,7 @@ def main():
         # After debugging return the intended exit code
         sys.exit(exit.code)
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print("Unexpected error:", sys.exc_info()[0])
         raise
 
 if __name__ == '__main__':
